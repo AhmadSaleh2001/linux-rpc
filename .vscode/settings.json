@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "serialized_buffer.h": "c",
+        "department.h": "c",
+        "student.h": "c"
+    }
+}
