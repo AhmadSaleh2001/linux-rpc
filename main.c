@@ -4,9 +4,9 @@
 #include "serialized_buffer.h"
 #include "student.h"
 #include "department.h"
+#include "linkedlist/linkedlist.h"
 
-int main() {
-
+void test_serialize_student() {
     serialized_buffer_t * b = NULL;
     init_serializd_buffer(&b);
 
@@ -23,6 +23,30 @@ int main() {
 
     student_t * std_deserialize = dserialize_student(b);
     print_student(std_deserialize);
+}
+
+void test_serialize_linkedlist() {
+        linkedlist_t * l = malloc(sizeof(linkedlist_t));
+    add_first(l, 1);
+    add_first(l, 2);
+    add_first(l, 3);
+    print_linkedlist(l);
+
+    printf("\n");
+
+    serialized_buffer_t * b = NULL;
+    init_serializd_buffer(&b);
+
+    serialize_linkedlist(b, l);
+    serialize_buffer_skip(b, -b->next);
+
+    linkedlist_t * linkedlist2 = dserialize_linkedlist(b);
+    print_linkedlist(linkedlist2);
+}
+
+int main() {
+
+    test_serialize_linkedlist();
     
     return 0;
 }

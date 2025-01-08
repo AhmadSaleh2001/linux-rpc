@@ -103,3 +103,60 @@ department_t * dserialize_department(serialized_buffer_t *b) {
 
     return dep;
 }
+
+void serialize_node(serialized_buffer_t *b, node_t * node) {
+
+    if(!node) {
+        unsigned int senitel = 0xFFFFFFFF;
+        serialize_data(b, &senitel, sizeof(unsigned int));
+        return;
+    }
+
+    serialize_data(b, &node->value, sizeof(int));
+    serialize_data(b, &node->next, sizeof(node_t*));
+    serialize_node(b, node->next);
+}
+
+node_t * dserialize_node(serialized_buffer_t *b) {
+
+    unsigned int senitel = 0;
+    deserialize_data(b, &senitel, sizeof(unsigned int));
+    if(senitel == 0xFFFFFFFF) {
+        return NULL;
+    }
+    serialize_buffer_skip(b, -sizeof(unsigned int));
+
+    node_t * node = calloc(1, sizeof(node_t));
+    deserialize_data(b, &node->value, sizeof(int));
+    deserialize_data(b, &node->next, sizeof(node_t*));
+    node->next = dserialize_node(b);
+
+    return node;
+}
+
+
+void serialize_linkedlist(serialized_buffer_t *b, linkedlist_t * linkedlist) {
+    if(!linkedlist) {
+        unsigned int senitel = 0xFFFFFFFF;
+        serialize_data(b, &senitel, sizeof(unsigned int));
+        return;
+    }
+
+    serialize_data(b, &linkedlist->head, sizeof(node_t*));
+    serialize_node(b, linkedlist->head);
+}
+
+linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b) {
+    unsigned int senitel = 0;
+    deserialize_data(b, &senitel, sizeof(unsigned int));
+    if(senitel == 0xFFFFFFFF) {
+        return NULL;
+    }
+    serialize_buffer_skip(b, -sizeof(unsigned int));
+
+    linkedlist_t * linkedlist = calloc(1, sizeof(linkedlist_t));
+    deserialize_data(b, &linkedlist->head, sizeof(node_t*));
+    linkedlist->head = dserialize_node(b);
+
+    return linkedlist;
+}

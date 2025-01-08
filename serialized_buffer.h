@@ -1,6 +1,8 @@
 #pragma once
 #include "student.h"
 #include "department.h"
+#include "linkedlist/node.h"
+#include "linkedlist/linkedlist.h"
 
 #define SERIALIZED_BUFFER_DEFAULT_SIZE 100
 
@@ -22,3 +24,9 @@ student_t * dserialize_student(serialized_buffer_t *b);
 
 void serialize_department(serialized_buffer_t *b, department_t * dep);
 department_t * dserialize_department(serialized_buffer_t *b);
+
+void serialize_node(serialized_buffer_t *b, node_t * node);
+node_t * dserialize_node(serialized_buffer_t *b);
+
+void serialize_linkedlist(serialized_buffer_t *b, linkedlist_t * linkedlist);
+linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b);
