@@ -44,6 +44,8 @@
         "variant": "c",
         "algorithm": "c",
         "node.h": "c",
-        "linkedlist.h": "c"
+        "linkedlist.h": "c",
+        "unistd.h": "c",
+        "stdio.h": "c"
     }
 }

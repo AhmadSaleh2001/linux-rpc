@@ -6,7 +6,7 @@
 CFLAGS = -Wall -Wextra -g
 
 # Source files
-SRCS = main.c department.c student.c serialized_buffer.c linkedlist/node.c linkedlist/linkedlist.c
+SRCS = main.c department.c student.c serialized_buffer.c linkedlist/node.c linkedlist/linkedlist.c linkedlist_udp_project/mx_udp_server.c linkedlist_udp_project/udp_client.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
