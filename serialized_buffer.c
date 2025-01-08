@@ -48,11 +48,8 @@ void free_serialize_buffer(serialized_buffer_t *b) {
 }
 
 void serialize_student(serialized_buffer_t *b, student_t * std) {
-    if(!std) {
-        unsigned int senitel = 0xFFFFFFFF;
-        serialize_data(b, &senitel, sizeof(unsigned int));
-        return;
-    }
+
+    SENTINEL_CHECK_SERIALIZATION(b, std)
 
     serialize_data(b, &std->name, sizeof(char) * 30);
     serialize_data(b, &std->age, sizeof(int));
@@ -62,13 +59,8 @@ void serialize_student(serialized_buffer_t *b, student_t * std) {
 }
 
 student_t * dserialize_student(serialized_buffer_t *b) {
-    unsigned int senitel = 0;
-    deserialize_data(b, &senitel, sizeof(unsigned int));
-    if(senitel == 0xFFFFFFFF) {
-        return NULL;
-    }
+    SENTINEL_CHECK_DESERIALIZATION(b)
 
-    serialize_buffer_skip(b, -sizeof(unsigned int));
     student_t * std = calloc(1, sizeof(student_t));
     deserialize_data(b, &std->name, sizeof(char)*30);
     deserialize_data(b, &std->age, sizeof(int));
@@ -79,24 +71,15 @@ student_t * dserialize_student(serialized_buffer_t *b) {
 }
 
 void serialize_department(serialized_buffer_t *b, department_t * dep) {
-    if(!dep) {
-        unsigned int senitel = 0xFFFFFFFF;
-        serialize_data(b, &senitel, sizeof(unsigned int));
-        return;
-    }
+    SENTINEL_CHECK_SERIALIZATION(b, dep)
 
     serialize_data(b, &dep->department, sizeof(char) * 30);
     serialize_data(b, &dep->dep_code, sizeof(int));
 }
 
 department_t * dserialize_department(serialized_buffer_t *b) {
-    unsigned int senitel = 0;
-    deserialize_data(b, &senitel, sizeof(unsigned int));
-    if(senitel == 0xFFFFFFFF) {
-        return NULL;
-    }
+    SENTINEL_CHECK_DESERIALIZATION(b)
 
-    serialize_buffer_skip(b, -sizeof(unsigned int));
     department_t * dep = calloc(1, sizeof(department_t));
     deserialize_data(b, &dep->department, sizeof(char)*30);
     deserialize_data(b, &dep->dep_code, sizeof(int));
@@ -106,11 +89,7 @@ department_t * dserialize_department(serialized_buffer_t *b) {
 
 void serialize_node(serialized_buffer_t *b, node_t * node) {
 
-    if(!node) {
-        unsigned int senitel = 0xFFFFFFFF;
-        serialize_data(b, &senitel, sizeof(unsigned int));
-        return;
-    }
+    SENTINEL_CHECK_SERIALIZATION(b, node)
 
     serialize_data(b, &node->value, sizeof(int));
     serialize_data(b, &node->next, sizeof(node_t*));
@@ -119,12 +98,7 @@ void serialize_node(serialized_buffer_t *b, node_t * node) {
 
 node_t * dserialize_node(serialized_buffer_t *b) {
 
-    unsigned int senitel = 0;
-    deserialize_data(b, &senitel, sizeof(unsigned int));
-    if(senitel == 0xFFFFFFFF) {
-        return NULL;
-    }
-    serialize_buffer_skip(b, -sizeof(unsigned int));
+    SENTINEL_CHECK_DESERIALIZATION(b)
 
     node_t * node = calloc(1, sizeof(node_t));
     deserialize_data(b, &node->value, sizeof(int));
@@ -136,23 +110,14 @@ node_t * dserialize_node(serialized_buffer_t *b) {
 
 
 void serialize_linkedlist(serialized_buffer_t *b, linkedlist_t * linkedlist) {
-    if(!linkedlist) {
-        unsigned int senitel = 0xFFFFFFFF;
-        serialize_data(b, &senitel, sizeof(unsigned int));
-        return;
-    }
+    SENTINEL_CHECK_SERIALIZATION(b, linkedlist)
 
     serialize_data(b, &linkedlist->head, sizeof(node_t*));
     serialize_node(b, linkedlist->head);
 }
 
 linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b) {
-    unsigned int senitel = 0;
-    deserialize_data(b, &senitel, sizeof(unsigned int));
-    if(senitel == 0xFFFFFFFF) {
-        return NULL;
-    }
-    serialize_buffer_skip(b, -sizeof(unsigned int));
+    SENTINEL_CHECK_DESERIALIZATION(b)
 
     linkedlist_t * linkedlist = calloc(1, sizeof(linkedlist_t));
     deserialize_data(b, &linkedlist->head, sizeof(node_t*));

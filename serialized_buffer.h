@@ -4,6 +4,21 @@
 #include "linkedlist/node.h"
 #include "linkedlist/linkedlist.h"
 
+#define SENTINEL_CHECK_SERIALIZATION(b, obj) \
+    if(!obj) {  \
+        unsigned int senitel = 0xFFFFFFFF; \
+        serialize_data(b, &senitel, sizeof(unsigned int)); \
+        return; \
+    } \
+
+#define SENTINEL_CHECK_DESERIALIZATION(b) \
+    unsigned int senitel = 0; \
+    deserialize_data(b, &senitel, sizeof(unsigned int)); \
+    if(senitel == 0xFFFFFFFF) { \
+        return NULL; \
+    } \
+    serialize_buffer_skip(b, -sizeof(unsigned int)); \
+
 #define SERIALIZED_BUFFER_DEFAULT_SIZE 100
 
 typedef struct serialized_buffer {
