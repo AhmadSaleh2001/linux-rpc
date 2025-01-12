@@ -109,8 +109,7 @@ void * dserialize_student_main(void *buffer) {
     return std;
 }
 
-int main() {
-    
+void test_serialize_generic_linkedlist()  {
     generic_linkedlist_t * l = malloc(sizeof(generic_linkedlist_t));
     student_t * std = malloc(sizeof(student_t));
     memcpy(std->name, "ahmad", 5);
@@ -138,6 +137,11 @@ int main() {
 
     generic_linkedlist_t * after_serialize = generic_dserialize_linkedlist(b);
     generic_print_linkedlist(after_serialize);
+}
+
+int main() {
+    
+    test_serialize_generic_linkedlist();
     
     return 0;
 }
