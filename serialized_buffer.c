@@ -131,35 +131,42 @@ linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b) {
 
 void generic_serialize_node(serialized_buffer_t *b, generic_node_t * node) {
     SENTINEL_CHECK_SERIALIZATION(b, node)
+    serialize_data(b, &node->serialize, sizeof(DeSerializeFunction));
+    serialize_data(b, &node->deserialize, sizeof(SerializeFunction));
+    serialize_data(b, &node->print, sizeof(PrintFunction));
     node->serialize(b, node->value);
     serialize_data(b, &node->next, sizeof(generic_node_t*));
-    serialize_node(b, node->next);
+    generic_serialize_node(b, node->next);
 }
 
 generic_node_t * generic_dserialize_node(serialized_buffer_t *b) {
     SENTINEL_CHECK_DESERIALIZATION(b)
 
-    node_t * node = calloc(1, sizeof(node_t));
-    deserialize_data(b, &node->value, sizeof(int));
-    deserialize_data(b, &node->next, sizeof(node_t*));
-    node->next = dserialize_node(b);
+    generic_node_t * node = calloc(1, sizeof(generic_node_t));
+
+    deserialize_data(b, &node->serialize, sizeof(DeSerializeFunction));
+    deserialize_data(b, &node->deserialize, sizeof(SerializeFunction));
+    deserialize_data(b, &node->print, sizeof(PrintFunction));
+    node->value = node->deserialize(b);
+    deserialize_data(b, &node->next, sizeof(generic_node_t*));
+    node->next = generic_dserialize_node(b);
 
     return node;
 }
 
-// void serialize_linkedlist(serialized_buffer_t *b, linkedlist_t * linkedlist) {
-//     SENTINEL_CHECK_SERIALIZATION(b, linkedlist)
+void generic_serialize_linkedlist(serialized_buffer_t *b, generic_linkedlist_t * linkedlist) {
+    SENTINEL_CHECK_SERIALIZATION(b, linkedlist)
 
-//     serialize_data(b, &linkedlist->head, sizeof(node_t*));
-//     serialize_node(b, linkedlist->head);
-// }
+    serialize_data(b, &linkedlist->head, sizeof(generic_node_t*));
+    generic_serialize_node(b, linkedlist->head);
+}
 
-// linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b) {
-//     SENTINEL_CHECK_DESERIALIZATION(b)
+generic_linkedlist_t * generic_dserialize_linkedlist(serialized_buffer_t *b) {
+    SENTINEL_CHECK_DESERIALIZATION(b)
 
-//     linkedlist_t * linkedlist = calloc(1, sizeof(linkedlist_t));
-//     deserialize_data(b, &linkedlist->head, sizeof(node_t*));
-//     linkedlist->head = dserialize_node(b);
+    generic_linkedlist_t * linkedlist = calloc(1, sizeof(generic_linkedlist_t));
+    deserialize_data(b, &linkedlist->head, sizeof(generic_node_t*));
+    linkedlist->head = generic_dserialize_node(b);
 
-//     return linkedlist;
-// }
+    return linkedlist;
+}

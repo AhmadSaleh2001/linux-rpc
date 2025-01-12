@@ -110,7 +110,7 @@ void * dserialize_student_main(void *buffer) {
 }
 
 int main() {
-
+    
     generic_linkedlist_t * l = malloc(sizeof(generic_linkedlist_t));
     student_t * std = malloc(sizeof(student_t));
     memcpy(std->name, "ahmad", 5);
@@ -126,7 +126,18 @@ int main() {
     generic_add_first(l, printStudentNode, serialize_student_main, dserialize_student_main, std);
     generic_add_first(l, printDepartmentNode, serialize_department_main, dserialize_department_main, dep);
 
+    printf("\n-----------\n");
     generic_print_linkedlist(l);
+    printf("\n-----------\n");
+
+    serialized_buffer_t * b = NULL;
+    init_serializd_buffer(&b);
+
+    generic_serialize_linkedlist(b, l);
+    serialize_buffer_skip(b, -b->next);
+
+    generic_linkedlist_t * after_serialize = generic_dserialize_linkedlist(b);
+    generic_print_linkedlist(after_serialize);
     
     return 0;
 }
