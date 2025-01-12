@@ -5,6 +5,8 @@
 #include "student.h"
 #include "department.h"
 #include "linkedlist/linkedlist.h"
+#include "generic_linkedlist/generic_node.h"
+#include "generic_linkedlist/generic_linkedlist.h"
 
 void test_serialize_student() {
     serialized_buffer_t * b = NULL;
@@ -44,9 +46,34 @@ void test_serialize_linkedlist() {
     print_linkedlist(linkedlist2);
 }
 
+void printStudentNode(void * data) {
+    student_t * std = (student_t *)data;
+    print_student(std);
+}
+
+void printDepartmentNode(void * data) {
+    department_t * dep = (department_t *)data;
+    print_department(dep);
+}
+
 int main() {
 
-    test_serialize_linkedlist();
+    generic_linkedlist_t * l = malloc(sizeof(generic_linkedlist_t));
+    student_t * std = malloc(sizeof(student_t));
+    memcpy(std->name, "ahmad", 5);
+    std->age = 20;
+    std->mark = 99;
+    memcpy(std->dep.department, "computer", 8);
+    std->dep.dep_code = 11;
+
+    department_t * dep = malloc(sizeof(department_t));
+    dep->dep_code = 99;
+    memcpy(dep->department, "math", 4);
+
+    generic_add_first(l, printStudentNode, std);
+    generic_add_first(l, printDepartmentNode, dep);
+
+    generic_print_linkedlist(l);
     
     return 0;
 }

@@ -46,6 +46,8 @@
         "node.h": "c",
         "linkedlist.h": "c",
         "unistd.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "generic_node.h": "c",
+        "generic_linkedlist.h": "c"
     }
 }
