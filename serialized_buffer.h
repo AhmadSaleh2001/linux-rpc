@@ -3,6 +3,8 @@
 #include "department.h"
 #include "linkedlist/node.h"
 #include "linkedlist/linkedlist.h"
+#include "generic_linkedlist/generic_node.h"
+#include "generic_linkedlist/generic_linkedlist.h"
 
 #define SENTINEL_CHECK_SERIALIZATION(b, obj) \
     if(!obj) {  \
@@ -45,3 +47,6 @@ node_t * dserialize_node(serialized_buffer_t *b);
 
 void serialize_linkedlist(serialized_buffer_t *b, linkedlist_t * linkedlist);
 linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b);
+
+void generic_serialize_node(serialized_buffer_t *b, generic_node_t * node);
+generic_node_t * generic_dserialize_node(serialized_buffer_t *b);

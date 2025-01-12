@@ -4,11 +4,14 @@
 #include "generic_linkedlist.h"
 #include "generic_node.h"
 
-void generic_add_first(generic_linkedlist_t * l, PrintFunction print, void * value) {
+void generic_add_first(generic_linkedlist_t * l, PrintFunction print, SerializeFunction serialize, DeSerializeFunction deserialize, void * value) {
     generic_node_t * newNode = calloc(1, sizeof(generic_node_t));
     newNode->value = value;
     newNode->print = print;
+    newNode->serialize = serialize;
+    newNode->deserialize = deserialize;
     newNode->next = NULL;
+
     if(!l->head) {
         l->head = newNode;
     } else {

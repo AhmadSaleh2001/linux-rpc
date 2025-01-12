@@ -5,6 +5,8 @@
 #include "serialized_buffer.h"
 #include "student.h"
 #include "department.h"
+#include "generic_linkedlist/generic_node.h"
+#include "generic_linkedlist/generic_linkedlist.h"
 
 void init_serializd_buffer(serialized_buffer_t ** b) {
     (*b) = calloc(1, sizeof(serialized_buffer_t));
@@ -125,3 +127,39 @@ linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b) {
 
     return linkedlist;
 }
+
+
+void generic_serialize_node(serialized_buffer_t *b, generic_node_t * node) {
+    SENTINEL_CHECK_SERIALIZATION(b, node)
+    node->serialize(b, node->value);
+    serialize_data(b, &node->next, sizeof(generic_node_t*));
+    serialize_node(b, node->next);
+}
+
+generic_node_t * generic_dserialize_node(serialized_buffer_t *b) {
+    SENTINEL_CHECK_DESERIALIZATION(b)
+
+    node_t * node = calloc(1, sizeof(node_t));
+    deserialize_data(b, &node->value, sizeof(int));
+    deserialize_data(b, &node->next, sizeof(node_t*));
+    node->next = dserialize_node(b);
+
+    return node;
+}
+
+// void serialize_linkedlist(serialized_buffer_t *b, linkedlist_t * linkedlist) {
+//     SENTINEL_CHECK_SERIALIZATION(b, linkedlist)
+
+//     serialize_data(b, &linkedlist->head, sizeof(node_t*));
+//     serialize_node(b, linkedlist->head);
+// }
+
+// linkedlist_t * dserialize_linkedlist(serialized_buffer_t *b) {
+//     SENTINEL_CHECK_DESERIALIZATION(b)
+
+//     linkedlist_t * linkedlist = calloc(1, sizeof(linkedlist_t));
+//     deserialize_data(b, &linkedlist->head, sizeof(node_t*));
+//     linkedlist->head = dserialize_node(b);
+
+//     return linkedlist;
+// }
