@@ -175,9 +175,8 @@ setup_udp_server_communication(){
 
             printf("Server recvd %d bytes from client %s:%u\n", sent_recv_bytes,
                     inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-
+        
             serialized_buffer_t client_data = deserialize_packet(data_buffer);
-            client_data.next = 0;
 
             printf("buffer ptr: %d\n", client_data.next);
             printf("buffer size: %d\n", client_data.size);
@@ -186,6 +185,23 @@ setup_udp_server_communication(){
             deserialize_data(&client_data, &received_b, sizeof(int));
 
             printf("here %d %d\n", received_a, received_b);
+
+            int result = received_a * received_b;
+
+            serialized_buffer_t * server_send_result_buffer = NULL;
+            init_serializd_buffer(&server_send_result_buffer, MAX_SEND_RECV_SEGMENT_SIZE);
+            serialize_data(server_send_result_buffer, &result, sizeof(int));
+            server_send_result_buffer->next = 0;
+
+            serialized_buffer_packet_t * server_send_packet = create_serialized_packet(server_send_result_buffer);
+
+            printf("bytes to send: %d\n", sizeof(serialized_buffer_packet_t) + server_send_result_buffer->size);
+            
+            /* Server replying back to client now*/
+            sent_recv_bytes = sendto(master_sock_udp_fd, server_send_packet, sizeof(serialized_buffer_packet_t) + server_send_result_buffer->size, 0,
+                                        (struct sockaddr *)&client_addr, sizeof(struct sockaddr));
+
+            printf("Server sent %d bytes in reply to client\n", sent_recv_bytes);
 
             close(master_sock_udp_fd);
             printf("Server closes connection with client : %s:%u\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));

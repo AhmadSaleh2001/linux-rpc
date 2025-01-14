@@ -11,6 +11,8 @@
 #include "serialized_buffer_packet.h"
 #include "rpc_common.h"
 
+char data_buffer[MAX_SEND_RECV_SEGMENT_SIZE];
+
 void rpc_send_recv(serialized_buffer_t * client_send_buffer, serialized_buffer_t * client_recv_buffer) {
     /*Step 1 : Initialization*/
     /*Socket handle*/
@@ -63,10 +65,10 @@ void rpc_send_recv(serialized_buffer_t * client_send_buffer, serialized_buffer_t
     
     printf("No of bytes sent = %d\n", sent_recv_bytes);
 
-    serialized_buffer_packet_t result;
-    sent_recv_bytes =  recvfrom(sockfd, (char *)&result, sizeof(serialized_buffer_packet_t), 0,
+    sent_recv_bytes = recvfrom(sockfd, (char *)&data_buffer, sizeof(serialized_buffer_packet_t) + client_send_buffer->size, 0,
                     (struct sockaddr *)&dest, &addr_len);
 
+    *client_recv_buffer = deserialize_packet(data_buffer);
     printf("No of bytes recvd = %d\n", sent_recv_bytes);
 }
 
@@ -83,6 +85,7 @@ int multiply_rpc(int a, int b) {
     
     // serialzie data
     serialized_buffer_t * client_send_buffer = client_multiply_marshall(a, b);
+    client_send_buffer->next = 0;
 
     serialized_buffer_t * client_recv_buffer = NULL;
     init_serializd_buffer(&client_recv_buffer, MAX_SEND_RECV_SEGMENT_SIZE);
@@ -93,6 +96,10 @@ int multiply_rpc(int a, int b) {
 
     // recieve the data
 
+    int res = 0;
+    deserialize_data(client_recv_buffer, &res, sizeof(int));
+
+    printf("res: %d\n", res);
 
     // free serialize / deserialize buffers
     free_serialize_buffer(client_send_buffer);
