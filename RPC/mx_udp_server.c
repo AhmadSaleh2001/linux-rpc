@@ -86,7 +86,7 @@ tcp_ip_covert_ip_p_to_n(char *ip_addr){
     return binary_prefix;
 }
 
-int multiply_server_stub(serialized_buffer_t client_data) {
+int multiply_server_stub_deserialize(serialized_buffer_t client_data) {
     int received_a, received_b;
     deserialize_data(&client_data, &received_a, sizeof(int));
     deserialize_data(&client_data, &received_b, sizeof(int));
@@ -99,7 +99,7 @@ void server_serialize_result(int result, serialized_buffer_t * server_send_respo
 }
 
 void rpc_server_process_message(serialized_buffer_t client_data, serialized_buffer_t * server_send_response) {
-    int result = multiply_server_stub(client_data);
+    int result = multiply_server_stub_deserialize(client_data);
     server_serialize_result(result, server_send_response);
 }
 
