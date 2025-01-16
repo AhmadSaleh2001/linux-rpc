@@ -13,6 +13,7 @@ serialized_buffer_packet_t *create_serialized_packet(serialized_buffer_t *buf) {
     }
 
     // Fill the struct
+    packet->rpc_header = buf->rpc_header;
     packet->size = buf->size;
     packet->next = buf->next;
     memcpy(packet->data, buf->b, buf->size); // Copy the actual buffer data
@@ -27,6 +28,7 @@ serialized_buffer_t deserialize_packet(char *recv_data) {
 
     // Create the deserialized structure
     serialized_buffer_t buf;
+    buf.rpc_header = packet->rpc_header;
     buf.size = packet->size;
     buf.next = packet->next;
     buf.b = malloc(buf.size);

@@ -3,6 +3,7 @@
 #include "serialized_buffer.h"
 
 typedef struct serialized_buffer_packet {
+    rpc_header_t rpc_header;
     int size;    // Size of the actual buffer
     int next;    // Next pointer value (if applicable)
     char data[]; // Flexible array member for the actual buffer

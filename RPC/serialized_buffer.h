@@ -17,7 +17,19 @@
 
 #define SERIALIZED_BUFFER_DEFAULT_SIZE 100
 
+typedef enum OPERATIONS {
+    ADD,
+    SUBTRACT,
+    MULTIPLY,
+    DIVISION
+} OPERATIONS;
+
+typedef struct rpc_header_ {
+    OPERATIONS op;
+} rpc_header_t;
+
 typedef struct serialized_buffer {
+    rpc_header_t rpc_header;
     char *b;
     int size;
     int next;

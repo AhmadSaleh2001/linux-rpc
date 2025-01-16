@@ -72,19 +72,25 @@ void rpc_send_recv(serialized_buffer_t * client_send_buffer, serialized_buffer_t
     printf("No of bytes recvd = %d\n", sent_recv_bytes);
 }
 
-serialized_buffer_t * client_multiply_marshall(int a, int b) {
+serialized_buffer_t * client_multiply_marshall(int a, int b, int operationType) {
     serialized_buffer_t * client_send_buffer = NULL;
     init_serializd_buffer(&client_send_buffer, MAX_SEND_RECV_SEGMENT_SIZE);
+    OPERATIONS op;
+    if(operationType == 1)op = ADD;
+    else if(operationType == 2)op = SUBTRACT;
+    else if(operationType == 3)op = MULTIPLY;
+    else if(operationType == 4)op = DIVISION;
 
+    client_send_buffer->rpc_header.op = op;
     serialize_data(client_send_buffer, &a, sizeof(int));
     serialize_data(client_send_buffer, &b, sizeof(int));
     return client_send_buffer;
 }
 
-int multiply_rpc(int a, int b) {
+int operation_rpc(int a, int b, int operationType) {
     
     // serialzie data
-    serialized_buffer_t * client_send_buffer = client_multiply_marshall(a, b);
+    serialized_buffer_t * client_send_buffer = client_multiply_marshall(a, b, operationType);
     client_send_buffer->next = 0;
 
     serialized_buffer_t * client_recv_buffer = NULL;
@@ -98,14 +104,10 @@ int multiply_rpc(int a, int b) {
 
     int res = 0;
     deserialize_data(client_recv_buffer, &res, sizeof(int));
-
-    printf("res: %d\n", res);
-
-    // free serialize / deserialize buffers
     free_serialize_buffer(client_send_buffer);
     free_serialize_buffer(client_recv_buffer);
 
-    return 0;
+    return res;
 }
 
 int main(int argc, char ** argv) {
@@ -117,7 +119,13 @@ int main(int argc, char ** argv) {
     printf("enter b:");
     scanf("%d", &b);
 
-    int res = multiply_rpc(a, b);
+    int operationType;
+    printf("1- add\n");
+    printf("2- subtract\n");
+    printf("3- multiply\n");
+    printf("4- division\n");
+    scanf("%d", &operationType);
+    int res = operation_rpc(a, b, operationType);
 
     printf("res: %d\n", res);
 
