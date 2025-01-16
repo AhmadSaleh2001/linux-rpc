@@ -86,6 +86,22 @@ tcp_ip_covert_ip_p_to_n(char *ip_addr){
     return binary_prefix;
 }
 
+int multiply_server_stub(serialized_buffer_t client_data) {
+    int received_a, received_b;
+    deserialize_data(&client_data, &received_a, sizeof(int));
+    deserialize_data(&client_data, &received_b, sizeof(int));
+    return received_a * received_b;
+}
+
+void server_serialize_result(int result, serialized_buffer_t * server_send_response) {
+    serialize_data(server_send_response, &result, sizeof(int));
+    server_send_response->next = 0;
+}
+
+void rpc_server_process_message(serialized_buffer_t client_data, serialized_buffer_t * server_send_response) {
+    int result = multiply_server_stub(client_data);
+    server_serialize_result(result, server_send_response);
+}
 
 void
 setup_udp_server_communication(){
@@ -177,21 +193,9 @@ setup_udp_server_communication(){
                     inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
         
             serialized_buffer_t client_data = deserialize_packet(data_buffer);
-
-            printf("buffer ptr: %d\n", client_data.next);
-            printf("buffer size: %d\n", client_data.size);
-            int received_a, received_b;
-            deserialize_data(&client_data, &received_a, sizeof(int));
-            deserialize_data(&client_data, &received_b, sizeof(int));
-
-            printf("here %d %d\n", received_a, received_b);
-
-            int result = received_a * received_b;
-
             serialized_buffer_t * server_send_result_buffer = NULL;
             init_serializd_buffer(&server_send_result_buffer, MAX_SEND_RECV_SEGMENT_SIZE);
-            serialize_data(server_send_result_buffer, &result, sizeof(int));
-            server_send_result_buffer->next = 0;
+            rpc_server_process_message(client_data, server_send_result_buffer);
 
             serialized_buffer_packet_t * server_send_packet = create_serialized_packet(server_send_result_buffer);
 
